@@ -10,12 +10,24 @@ namespace HomeWorkSupermarket
     {
         static void Main(string[] args)
         {           
-            string userInput = Console.ReadLine();
+            string userInput = "";
+            Console.WriteLine("Свободная касса.");
+            Supermarket supermarket = new Supermarket();
+
             while (userInput != "Closse")
             {
-                Console.WriteLine("Касса открыта и готова обслуживать клиента. Закрыть кассу - ввод команды Closse");
-                Supermarket supermarket = new Supermarket();
-                supermarket.CountTotal();
+                Console.WriteLine("Касса открыта и готова обслуживать клиента команда  (Next). Закрыть кассу - ввод команды (Closse)");
+                userInput = Console.ReadLine();
+                
+                switch (userInput)
+                {
+                    case "Next":
+                        supermarket.ServeClient();
+                        break;
+
+                    case "Closse":
+                        break;
+                }
             }
 
             Console.WriteLine("Касса закрыта.");                      
@@ -26,21 +38,28 @@ namespace HomeWorkSupermarket
 
 class Supermarket
 {
-    private Client _client = new Client();
+    private List<Client> _clients = new List<Client>();
 
-    public void CountTotal()
+    public void ServeClient()
     {
-        int total = _client.GetTotalPrice();
+        _clients.Add(new Client());
+        CountTotal();
+    }
 
-        while (_client.Money < total)
+    private void CountTotal()
+    {
+        Client client = _clients.Last();
+        int total = client.GetTotalPrice();
+
+        while (client.Money < total)
         {
-            Console.WriteLine($"К оплате {total} рублей. У клиента {_client.Money}");
+            Console.WriteLine($"К оплате {total} рублей. У клиента {client.Money}");
 
-            if (_client.Money < total)
+            if (client.Money < total)
             {
                 Console.WriteLine("Клиенту не хватает денег. Убераем один товар из продуктовой тележки.");
-                _client.DeleteProduct(_client);
-                total = _client.GetTotalPrice();
+                client.DeleteProduct();
+                total = client.GetTotalPrice();
             }     
         }
 
@@ -62,7 +81,6 @@ class Client
     private Random _random = new Random();
 
     public int Money => _money;
-    public List<Product> Products => _products;
 
     public Client()
     {
@@ -102,15 +120,13 @@ class Client
         }
     }
 
-    public void DeleteProduct(Client client)
+    public void DeleteProduct()
     {
-        List<Product> products = client.Products;
+        List<Product> products = _products;
         int indexMin = 0;
         int indexMax = products.Count;
-
         int index = _random.Next(indexMin, indexMax);
 
-        Console.WriteLine(index);
         if (indexMax == 0)
         {
             products.RemoveAt(indexMin);
@@ -127,8 +143,8 @@ class Product
     private string _title = "";
     private int  _price;
     private Random _random = new Random();
-    int minPrice = 100;
-    int maxPrice = 45000;
+    private int  _minPrice = 100;
+    private int _maxPrice = 45000;
 
     public string Title => _title;
     public int Price { get; private set; }
@@ -147,7 +163,7 @@ class Product
 
     public void GreatPrice()
     {
-        _price = _random.Next(minPrice, maxPrice);
+        _price = _random.Next(_minPrice, _maxPrice);
         Price = _price;
     }
 }
