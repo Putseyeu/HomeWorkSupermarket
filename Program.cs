@@ -48,28 +48,32 @@ class Supermarket
 
     private void CountTotal()
     {
-        Client client = _clients.Last();
-        int total = client.GetTotalPrice();
+        Client client = _clients.Last();       
+        bool completed = false;
 
-        while (client.Money < total)
+        while (completed != true)
         {
-            Console.WriteLine($"К оплате {total} рублей. У клиента {client.Money}");
+            int total = client.GetTotalPrice();            
 
             if (client.Money < total)
             {
+                Console.WriteLine($"К оплате {total} рублей. У клиента {client.Money}");
                 Console.WriteLine("Клиенту не хватает денег. Убераем один товар из продуктовой тележки.");
                 client.DeleteProduct();
-                total = client.GetTotalPrice();
-            }     
-        }
-
-        if (total == 0)
-        {
-            Console.WriteLine("Клиенту не хватило денег на покупки.");
-        }
-        else
-        {
-            Console.WriteLine("Товар оплачен.");
+            }
+            else
+            {
+                if (total == 0)
+                {
+                    Console.WriteLine("Клиенту не хватило денег на покупки.");
+                    completed = true;
+                }
+                else
+                {
+                    Console.WriteLine("Товар оплачен.");
+                    completed = true;
+                }               
+            }
         }
     }
 }
@@ -85,7 +89,7 @@ class Client
     public Client()
     {
         GreatNumberMoney();
-        GreatListProduct();
+        СreatingProductList();
     }
 
     public void GreatNumberMoney()
@@ -99,6 +103,7 @@ class Client
     public int GetTotalPrice()
     {
         int total = 0;
+
         for (int i = 0; i < _products.Count; i++)
         {
             Console.WriteLine($"Продукт {_products[i].Title} Цена {_products[i].Price} ");
@@ -108,7 +113,7 @@ class Client
         return total;
     }
 
-    public void GreatListProduct()
+    public void СreatingProductList()
     {
         int minNumber = 1;
         int maxNumber = 6;
@@ -140,30 +145,27 @@ class Client
 
 class Product
 {
-    private string _title = "";
-    private int  _price;
     private Random _random = new Random();
     private int  _minPrice = 100;
     private int _maxPrice = 45000;
 
-    public string Title => _title;
+    public string Title { get; private set; }
     public int Price { get; private set; }
 
     public Product()
     {
-        GreatTitle();
-        GreatPrice();   
+        СreatingTitle();
+        СreatingPrice();   
     }
 
-    public void GreatTitle()
+    public void СreatingTitle()
     {
         Console.WriteLine("Что хотите купить ?");
-        _title = Console.ReadLine(); 
+        Title = Console.ReadLine(); 
     }
 
-    public void GreatPrice()
+    public void СreatingPrice()
     {
-        _price = _random.Next(_minPrice, _maxPrice);
-        Price = _price;
+        Price = _random.Next(_minPrice, _maxPrice);
     }
 }
